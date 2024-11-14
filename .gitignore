@@ -78,3 +78,8 @@ Assets/DunGen.meta
 # ============== #
 Output/
 Logs/
+build**
+*.csv
+Unity**
+Logs/**
+

@@ -26,6 +26,7 @@ namespace StoryGenerator.Recording
         public bool savePoseData = false;
         public bool saveSceneStates = false;
 
+
         public string OutputDirectory { get; set; }
         public int MaxFrameNumber { get; set; }
         public string FileName { get; set; }
@@ -42,6 +43,11 @@ namespace StoryGenerator.Recording
         List<ActionRange> actionRanges = new List<ActionRange>();
         List<CameraData> cameraData = new List<CameraData>();
         List<PoseData> poseData = new List<PoseData>();
+        // A dynamic list to hold Vector3 positions.
+        //TODO: define a class for trajectory data like CameraData, ActionRange and so on
+        List<Vector3> positionData = new List<Vector3>(); 
+    
+
         int frameRate = 20;
         int frameNum = 0;
         public int currentframeNum = 0;
@@ -53,6 +59,7 @@ namespace StoryGenerator.Recording
         const int INITIAL_FRAME_SKIP = 2;
         public int ImageWidth = 640; // 375;
         public int ImageHeight = 480; //250;
+
 
         // ======================================================================================== //
         // ================================== Class Declarations ================================== //
@@ -187,6 +194,8 @@ namespace StoryGenerator.Recording
                 const string FILE_NAME_PREFIX = "Action_";
                 StartCoroutine(OnEndOfFrame(Path.Combine(OutputDirectory, FILE_NAME_PREFIX)));
             }
+
+         
         }
 
         // ======================================================================================== //
@@ -282,6 +291,26 @@ namespace StoryGenerator.Recording
                     }
                     if (saveSceneStates) {
                         sceneStateSequence.SetFrameNum(frameNum);
+                    }
+                    //character position tracking
+                    if ( Animator != null)
+                    {
+                        CharacterControl characterControl = Animator.GetComponent<CharacterControl>();
+                        if (characterControl != null)
+                        {
+                            positionData.AddRange(characterControl.GetTrackedPositions());
+                            characterControl.ClearTrackedPositions(); // Clear after copying
+
+                            // Get the last position in the list
+                            //TODO: check if the fixed time interval based position tracking is needed
+                            //TODO: check if the p
+                            // var positions = characterControl.GetTrackedPositions();
+                            // if (positions.Count > 0)
+                            // {
+                            //     positionData.Add(positions.Last());
+                            // }
+                            // characterControl.ClearTrackedPositions();
+                        }
                     }
                 }
 
@@ -380,6 +409,7 @@ namespace StoryGenerator.Recording
             const string PREFIX_SCENE_STATE = "ss_";
             const string FILE_EXT_TXT = ".txt";
             const string FILE_EXT_JSON = ".json";
+            const string PREFIX_TRAJECTORY = "traj_"; // Add prefix for trajectory data
 
             string currentFileName = Path.Combine(OutputDirectory, PREFIX_ACTION) + FileName + FILE_EXT_TXT;
 
@@ -427,6 +457,19 @@ namespace StoryGenerator.Recording
                     sw.WriteLine(JsonUtility.ToJson(sceneStateSequence, true));
                 }
             }
+
+            String trajectoryFileName = Path.Combine(OutputDirectory, PREFIX_TRAJECTORY) + FileName + FILE_EXT_TXT;
+
+            if (positionData.Count == 0) {
+                File.Delete(trajectoryFileName);
+            } else {
+                using (StreamWriter sw = new StreamWriter(trajectoryFileName)) {
+                    foreach (Vector3 pos in positionData) {
+                        sw.WriteLine($"{pos.x} {pos.y} {pos.z}");
+                    }
+                }
+            }
+            
         }
 
         // ======================================================================================== //

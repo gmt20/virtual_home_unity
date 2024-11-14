@@ -22,7 +22,7 @@ using System.Threading.Tasks;
 using StoryGenerator.CharInteraction;
 using Unity.Profiling;
 using RootMotion.FinalIK;
-using DunGen;
+// using DunGen;
 
 
 namespace StoryGenerator
@@ -1172,60 +1172,60 @@ namespace StoryGenerator
                    
                 }
 
-                else if (networkRequest.action == "procedural_generation") 
-                {   
-                    GameObject ProceduralGenerationObject = GameObject.FindWithTag("Procedural");
-                    var runtimeDungeon = ProceduralGenerationObject.GetComponent<RuntimeDungeon>();
-                    var generator = runtimeDungeon.Generator;
+                // else if (networkRequest.action == "procedural_generation") 
+                // {   
+                //     GameObject ProceduralGenerationObject = GameObject.FindWithTag("Procedural");
+                //     var runtimeDungeon = ProceduralGenerationObject.GetComponent<RuntimeDungeon>();
+                //     var generator = runtimeDungeon.Generator;
 
-                    if (networkRequest.intParams?.Count > 0)
-                    {
-                        int seed = networkRequest.intParams[0];
+                //     if (networkRequest.intParams?.Count > 0)
+                //     {
+                //         int seed = networkRequest.intParams[0];
 
-                        generator.ShouldRandomizeSeed = false;
-                        generator.Seed = seed;
-                        generator.Generate();
-                        PreviousEnvironment.IndexMemory = -1;
-                        response.message = "";
-                        response.success = true;
-                    }
-                    else
-                    {
-                        generator.ShouldRandomizeSeed = true;
-                        generator.Generate();
-                        PreviousEnvironment.IndexMemory = -1;
-                        response.message = "";
-                        response.success = true;
-                    }
+                //         generator.ShouldRandomizeSeed = false;
+                //         generator.Seed = seed;
+                //         generator.Generate();
+                //         PreviousEnvironment.IndexMemory = -1;
+                //         response.message = "";
+                //         response.success = true;
+                //     }
+                //     else
+                //     {
+                //         generator.ShouldRandomizeSeed = true;
+                //         generator.Generate();
+                //         PreviousEnvironment.IndexMemory = -1;
+                //         response.message = "";
+                //         response.success = true;
+                //     }
 
-                    cameraInitializer.initialized = false;
-                    currentGraph = null;
-                    currentGraphCreator = null;
-                    CurrentStateList = new List<State>();
+                //     cameraInitializer.initialized = false;
+                //     currentGraph = null;
+                //     currentGraphCreator = null;
+                //     CurrentStateList = new List<State>();
      
-                    NavMeshSurface nm = GameObject.FindObjectOfType<NavMeshSurface>();
-                    nm.BuildNavMesh();
+                //     NavMeshSurface nm = GameObject.FindObjectOfType<NavMeshSurface>();
+                //     nm.BuildNavMesh();
 
-                    houseTransform = GameObject.Find("Dungeon").transform;
+                //     houseTransform = GameObject.Find("Dungeon").transform;
 
-                    yield return null;
-                    ProcessHomeandCameras();
+                //     yield return null;
+                //     ProcessHomeandCameras();
 
-                    numCharacters = 0;
-                    characters = new List<CharacterControl>();
-                    sExecutors = new List<ScriptExecutor>();
-                    CameraExpander.ResetCharacterCameras();
+                //     numCharacters = 0;
+                //     characters = new List<CharacterControl>();
+                //     sExecutors = new List<ScriptExecutor>();
+                //     CameraExpander.ResetCharacterCameras();
 
-                    yield return null;
+                //     yield return null;
 
-                    currentGraphCreator = new EnvironmentGraphCreator(dataProviders);
-                    var graph = currentGraphCreator.CreateGraph(houseTransform);
-                    currentGraph = graph;
+                //     currentGraphCreator = new EnvironmentGraphCreator(dataProviders);
+                //     var graph = currentGraphCreator.CreateGraph(houseTransform);
+                //     currentGraph = graph;
 
-                    response.message = "";
-                    response.success = true;
+                //     response.message = "";
+                //     response.success = true;
 
-                }
+                // }
 
                 else if (networkRequest.action == "clear_procedural") 
                 {   
@@ -1244,33 +1244,33 @@ namespace StoryGenerator
 
                 }
 
-                else if (networkRequest.action == "process") 
-                {   
-                    cameraInitializer.initialized = false;
-                    currentGraph = null;
-                    currentGraphCreator = null;
-                    CurrentStateList = new List<State>();
+                // else if (networkRequest.action == "process") 
+                // {   
+                //     cameraInitializer.initialized = false;
+                //     currentGraph = null;
+                //     currentGraphCreator = null;
+                //     CurrentStateList = new List<State>();
      
-                    NavMeshSurface nm = GameObject.FindObjectOfType<NavMeshSurface>();
-                    nm.BuildNavMesh();
+                //     NavMeshSurface nm = GameObject.FindObjectOfType<NavMeshSurface>();
+                //     nm.BuildNavMesh();
 
-                    houseTransform = GameObject.Find("Dungeon").transform;
-                    ProcessHomeandCameras();
+                //     houseTransform = GameObject.Find("Dungeon").transform;
+                //     ProcessHomeandCameras();
 
-                    numCharacters = 0;
-                    characters = new List<CharacterControl>();
-                    sExecutors = new List<ScriptExecutor>();
-                    CameraExpander.ResetCharacterCameras();
+                //     numCharacters = 0;
+                //     characters = new List<CharacterControl>();
+                //     sExecutors = new List<ScriptExecutor>();
+                //     CameraExpander.ResetCharacterCameras();
 
-                    yield return null;
+                //     yield return null;
 
-                    currentGraphCreator = new EnvironmentGraphCreator(dataProviders);
-                    var graph = currentGraphCreator.CreateGraph(houseTransform);
-                    currentGraph = graph;
+                //     currentGraphCreator = new EnvironmentGraphCreator(dataProviders);
+                //     var graph = currentGraphCreator.CreateGraph(houseTransform);
+                //     currentGraph = graph;
 
-                    response.message = "";
-                    response.success = true;
-                }
+                //     response.message = "";
+                //     response.success = true;
+                // }
 
                 else if (networkRequest.action == "activate_physics") 
                 {   

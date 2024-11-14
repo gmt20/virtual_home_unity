@@ -273,6 +273,11 @@ namespace StoryGenerator
         const string ANIM_STR_SIT_WEIGHT = "SitWeight";
         const string ANIM_STR_HAND_WEIGHT = "HandWeight";
 
+        //added variable to track position every  0.5 seconds
+        private float lastPositionTrackTime = 0f;
+        private const float POSITION_TRACK_INTERVAL = 0.5f;
+        private List<Vector3> trackedPositions = new List<Vector3>();
+
         #region UnityEventFunctions
         void Awake()
         {
@@ -295,6 +300,30 @@ namespace StoryGenerator
             m_anm_isCharSittingDown = false;
             m_ikTargets = new IkTargets(gameObject, Randomize);
         }
+
+        // get character positions
+
+        void Update()
+        {
+            // Track position every 0.5 seconds
+            if (Time.time - lastPositionTrackTime >= POSITION_TRACK_INTERVAL)
+            {
+                trackedPositions.Add(transform.position);
+                lastPositionTrackTime = Time.time;
+            }
+        }
+        //Add method to get tracked positions 
+        public List<Vector3> GetTrackedPositions()
+        {
+            return new List<Vector3>(trackedPositions); // Return a copy to prevent external modification
+        }
+        // Add method to clear tracked positions
+        public void ClearTrackedPositions()
+        {
+            trackedPositions.Clear();
+            lastPositionTrackTime = 0f;
+        }
+
 
         public void SetSpeed(float speed_value=1.0f)
         {
