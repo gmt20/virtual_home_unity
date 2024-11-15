@@ -82,4 +82,8 @@ build**
 *.csv
 Unity**
 Logs/**
+Packages/**
+ProjectSettings/**
+UserSettings/**
+
 

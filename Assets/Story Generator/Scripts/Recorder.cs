@@ -160,6 +160,14 @@ namespace StoryGenerator.Recording
                     MarkCameraEnd();
                 }
                 recording = value;
+                if (Animator != null)
+                {
+                    CharacterControl characterControl = Animator.GetComponent<CharacterControl>();
+                    if (characterControl != null)
+                    {
+                        characterControl.SetRecording(value);  // Call SetRecording when recording state changes
+                    }
+                }
             }
         }
 
@@ -298,18 +306,12 @@ namespace StoryGenerator.Recording
                         CharacterControl characterControl = Animator.GetComponent<CharacterControl>();
                         if (characterControl != null)
                         {
-                            positionData.AddRange(characterControl.GetTrackedPositions());
-                            characterControl.ClearTrackedPositions(); // Clear after copying
-
-                            // Get the last position in the list
-                            //TODO: check if the fixed time interval based position tracking is needed
-                            //TODO: check if the p
-                            // var positions = characterControl.GetTrackedPositions();
-                            // if (positions.Count > 0)
-                            // {
-                            //     positionData.Add(positions.Last());
-                            // }
-                            // characterControl.ClearTrackedPositions();
+                            characterControl.TrackPosition();
+                            var position = characterControl.GetLastPosition();
+                            if (position.HasValue)
+                            {
+                                positionData.Add(position.Value);
+                            }
                         }
                     }
                 }

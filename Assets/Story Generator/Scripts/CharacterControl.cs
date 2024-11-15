@@ -273,10 +273,11 @@ namespace StoryGenerator
         const string ANIM_STR_SIT_WEIGHT = "SitWeight";
         const string ANIM_STR_HAND_WEIGHT = "HandWeight";
 
-        //added variable to track position every  0.5 seconds
-        private float lastPositionTrackTime = 0f;
-        private const float POSITION_TRACK_INTERVAL = 0.5f;
-        private List<Vector3> trackedPositions = new List<Vector3>();
+
+        // Add these properties/fields
+        private bool isRecording = false;
+        private Vector3? lastPosition = null;  // Nullable Vector3 to track last position
+        private List<Vector3> trackedPositions = new List<Vector3>();  // Add this line to define tracked positions
 
         #region UnityEventFunctions
         void Awake()
@@ -301,27 +302,40 @@ namespace StoryGenerator
             m_ikTargets = new IkTargets(gameObject, Randomize);
         }
 
-        // get character positions
 
-        void Update()
+        // New methods to track character position based on recording state
+        // Method to control recording state
+        public void SetRecording(bool recording)
         {
-            // Track position every 0.5 seconds
-            if (Time.time - lastPositionTrackTime >= POSITION_TRACK_INTERVAL)
+            isRecording = recording;
+            if (!recording)
             {
-                trackedPositions.Add(transform.position);
-                lastPositionTrackTime = Time.time;
+                ClearTrackedPositions();
+                lastPosition = null;
             }
         }
-        //Add method to get tracked positions 
-        public List<Vector3> GetTrackedPositions()
+
+        // Called by Recorder to track position
+        public void TrackPosition()
         {
-            return new List<Vector3>(trackedPositions); // Return a copy to prevent external modification
+            if (isRecording)
+            {
+                lastPosition = transform.position;
+                trackedPositions.Add(lastPosition.Value);
+            }
         }
-        // Add method to clear tracked positions
+
+        // Get the last tracked position
+        public Vector3? GetLastPosition()
+        {
+            return lastPosition;
+        }
+
+        // Modified clear method to also clear last position
         public void ClearTrackedPositions()
         {
             trackedPositions.Clear();
-            lastPositionTrackTime = 0f;
+            lastPosition = null;
         }
 
 
