@@ -1360,7 +1360,39 @@ namespace StoryGenerator
                     response.success = true;
                     response.message = "";
                 } 
-                
+
+
+                // adding new actions for placing motion sensors in an environment addition here 
+                else if (networkRequest.action == "place_sensors")
+                {
+                    try 
+                    {
+                        // Get environment ID from network request parameters
+                        if (networkRequest.stringParams == null || networkRequest.stringParams.Count == 0)
+                        {
+                            throw new System.ArgumentException("Environment ID is required");
+                        }
+
+                        string environmentId = networkRequest.stringParams[0];
+                        
+                        // Check if house transform exists
+                        if (houseTransform == null)
+                        {
+                            throw new System.Exception("No environment loaded. Please load environment first.");
+                        }
+
+                        MotionSensorPlacer sensorPlacer = new MotionSensorPlacer(houseTransform, environmentId);
+                        sensorPlacer.PlaceSensorsInEnvironment();
+                        
+                        response.success = true;
+                        response.message = $"Motion sensors placed successfully in environment {environmentId}";
+                    }
+                    catch (System.Exception e)
+                    {
+                        response.success = false;
+                        response.message = $"Error placing sensors: {e.Message}";
+                    }
+                }
                 else 
                 {
                     response.success = false;

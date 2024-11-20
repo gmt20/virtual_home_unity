@@ -60,6 +60,10 @@ namespace StoryGenerator.Recording
         public int ImageWidth = 640; // 375;
         public int ImageHeight = 480; //250;
 
+        //Motion detection
+
+        private List<MotionDetectionEvent> motionEvents = new List<MotionDetectionEvent>();
+
 
         // ======================================================================================== //
         // ================================== Class Declarations ================================== //
@@ -301,7 +305,7 @@ namespace StoryGenerator.Recording
                         sceneStateSequence.SetFrameNum(frameNum);
                     }
                     //character position tracking
-                    if ( Animator != null)
+                    if (Animator != null)
                     {
                         CharacterControl characterControl = Animator.GetComponent<CharacterControl>();
                         if (characterControl != null)
@@ -310,7 +314,24 @@ namespace StoryGenerator.Recording
                             var position = characterControl.GetLastPosition();
                             if (position.HasValue)
                             {
+                                // Existing code
                                 positionData.Add(position.Value);
+
+                                // Add new motion detection code
+                                foreach (var sensor in MotionSensorManager.GetAllSensors())
+                                {
+                                    if (sensor.IsPositionDetected(position.Value))
+                                    {
+                                        motionEvents.Add(new MotionDetectionEvent
+                                        {
+                                            frameNumber = frameNum,
+                                            characterId = characterControl.gameObject.name,
+                                            sensorId = sensor.SensorId,
+                                            roomName = sensor.currentRoom,
+                                            characterPosition = position.Value
+                                        });
+                                    }
+                                }
                             }
                         }
                     }
@@ -468,6 +489,19 @@ namespace StoryGenerator.Recording
                 using (StreamWriter sw = new StreamWriter(trajectoryFileName)) {
                     foreach (Vector3 pos in positionData) {
                         sw.WriteLine($"{pos.x} {pos.y} {pos.z}");
+                    }
+                }
+            }
+
+
+            String motionEventsFileName = Path.Combine(OutputDirectory, "motion_events_") + FileName + FILE_EXT_TXT;
+            
+            if (motionEvents.Count == 0) {
+                File.Delete(motionEventsFileName);
+            } else {
+                using (StreamWriter sw = new StreamWriter(motionEventsFileName)) {
+                    foreach (var evt in motionEvents) {
+                        sw.WriteLine($"{evt.frameNumber} {evt.characterId} {evt.sensorId} {evt.roomName} {evt.characterPosition.x} {evt.characterPosition.y} {evt.characterPosition.z}");
                     }
                 }
             }
